@@ -46,6 +46,8 @@
         android:id="@+id/custom_button"
         android:layout_width="0dp"
         android:layout_height="70dp"
+        app:buttonColor="@color/colorPrimary"
+        app:faceColor="@color/colorAccent"
         android:layout_marginStart="11dp"
         android:layout_marginEnd="11dp"
         android:layout_marginBottom="20dp"

@@ -7,12 +7,20 @@ import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
-import android.widget.Button
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+    companion object {
+        private val DEFAULT_BUTTON_COLOR = Color.parseColor("#07C2AA")
+        private val DEFAULT_FACE_COLOR = Color.parseColor("#F9A825")
+    }
+
+
+    var buttonColor = DEFAULT_BUTTON_COLOR
+    var faceColor = DEFAULT_FACE_COLOR
+
     private var widthSize = 0
     private var heightSize = 0
 
@@ -20,13 +28,6 @@ class LoadingButton @JvmOverloads constructor(
 
     private var buttonState: ButtonState by Delegates.observable(ButtonState.Completed) { p, old, new ->
 
-    }
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-        textSize = 60f
-        textAlign = Paint.Align.CENTER
-        typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
-        color = resources.getColor(R.color.colorPrimary)
     }
     private val textBoundRect = Rect()
     private var progress = 0f
@@ -39,14 +40,24 @@ class LoadingButton @JvmOverloads constructor(
             invalidate()
         }
     }
-
-
     init {
+        setupAttributes(attrs)
         isClickable = true
         valueAnimator = AnimatorInflater.loadAnimator(context, R.animator.loading) as ValueAnimator
         valueAnimator.addUpdateListener(listener)
 
     }
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        textSize = 60f
+        textAlign = Paint.Align.CENTER
+        typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
+        color = buttonColor
+    }
+
+
+
+
 
     override fun performClick(): Boolean {
         super.performClick()
@@ -78,7 +89,7 @@ class LoadingButton @JvmOverloads constructor(
             }
             val x = measuredWidth.toFloat() / 2
 
-            paint.color = resources.getColor(R.color.colorAccent)
+            paint.color = faceColor
 
             canvas?.drawArc(
                 x + textBoundRect.right / 2 + 40f,
@@ -95,7 +106,7 @@ class LoadingButton @JvmOverloads constructor(
 
         paint.color = Color.WHITE
         canvas?.drawText(text as String, (width / 2).toFloat(), (height / 2).toFloat(), paint)
-        paint.color = resources.getColor(R.color.colorPrimary)
+        paint.color = buttonColor
 
     }
 
@@ -110,6 +121,21 @@ class LoadingButton @JvmOverloads constructor(
         widthSize = w
         heightSize = h
         setMeasuredDimension(w, h)
+    }
+
+    private fun setupAttributes(attrs: AttributeSet?) {
+        val typedArray =
+            context.theme.obtainStyledAttributes(attrs, R.styleable.LoadingButton, 0, 0)
+        buttonColor = typedArray.getColor(
+            R.styleable.LoadingButton_buttonColor,
+            DEFAULT_BUTTON_COLOR
+        )
+        faceColor = typedArray.getColor(
+            R.styleable.LoadingButton_faceColor,
+            DEFAULT_FACE_COLOR
+        )
+        typedArray.recycle()
+
     }
 
 }
